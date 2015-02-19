@@ -2,12 +2,8 @@ package com.repeatableventures.android.sunshine;
 
 import com.google.gson.Gson;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
@@ -15,16 +11,7 @@ import java.util.List;
  * Created by anthony on 2/11/15.
  */
 public class WeatherDataParser {
-    public static double getMaxTemperatureForDay(String rawData, int dayIndex) throws JSONException {
-        double result = new JSONObject(rawData)
-                .getJSONArray("list")
-                .getJSONObject(dayIndex)
-                .getJSONObject("temp")
-                .getDouble("max");
-        return result;
-    }
-
-    public static Collection<String> decodeJson(String json) {
+    public static ArrayList<String> decodeJson(String json) {
         final Gson gson = new Gson();
         final Forecast weather = gson.fromJson(json, Forecast.class);
 
@@ -32,7 +19,7 @@ public class WeatherDataParser {
         for (DailyForecast df : weather.list) {
             Date date = new Date((long) (df.dt * 1000L));
             String dateString = new SimpleDateFormat("EEE, MMM dd").format(date);
-            decodedJson.add(String.format("%s - %s -  %s/%s", dateString, df.weather.main, df.temp.max, df.temp.min));
+            decodedJson.add(String.format("%s - %s - %s˚ / %s˚", dateString, df.weather.get(0).main, df.temp.max, df.temp.min));
         }
 
         return decodedJson;
@@ -47,7 +34,7 @@ public class WeatherDataParser {
     private class DailyForecast {
         public Double dt;
         public Temperature temp;
-        public Weather weather;
+        public List<Weather> weather;
         public Double pressure;
         public Double humidity;
         public Double speed;
